@@ -23,6 +23,9 @@ public class OrderItemEntity {
     @Column(name = "item_id")
     private Long itemId;
 
+    @Column(name = "item_name")
+    private String itemName;
+
     @Column(name = "quantity")
     private Integer quantity;
 
