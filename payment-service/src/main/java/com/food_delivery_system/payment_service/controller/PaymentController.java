@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/payments")
@@ -34,6 +36,18 @@ public class PaymentController {
                 .paymentStatus(PaymentStatus.PAYMENT_CREATED)
                 .paymentMethod(request.paymentMethod())
                 .build();
+
+        Optional<PaymentEntity> foundPayment = paymentJpaRepository.findByOrderId(request.orderId());
+        if(foundPayment.isPresent()) {
+            log.info("Payment already exists for orderId={}", request.orderId());
+            return CreatePaymentResponse.builder()
+                    .paymentId(foundPayment.get().getId())
+                    .paymentStatus(foundPayment.get().getPaymentStatus())
+                    .orderId(foundPayment.get().getOrderId())
+                    .paymentMethod(foundPayment.get().getPaymentMethod())
+                    .amount(foundPayment.get().getAmount())
+                    .build();
+        }
 
         PaymentEntity saved = paymentJpaRepository.save(newPayment);
 
