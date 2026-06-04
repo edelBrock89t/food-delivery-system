@@ -3,6 +3,7 @@ package com.food_delivery_system.order_service.controller;
 import com.food_delivery_system.http.order.CreateOrderRequest;
 import com.food_delivery_system.http.order.OrderDTO;
 import com.food_delivery_system.order_service.converter.OrderDTOConverter;
+import com.food_delivery_system.order_service.dto.OrderPaymentRequest;
 import com.food_delivery_system.order_service.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -28,5 +29,10 @@ public class OrderController {
     @GetMapping("/{id}")
     public OrderDTO getOneOrder(@PathVariable("id") Long id) {
         return orderDTOConverter.convert(orderService.getOrderOrThrow(id));
+    }
+
+    @PostMapping("/{id}/pay")
+    public OrderDTO processPayment(@PathVariable("id") Long orderId, @RequestBody OrderPaymentRequest request) {
+        return orderDTOConverter.convert(orderService.processPayment(orderId, request));
     }
 }

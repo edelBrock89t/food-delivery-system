@@ -1,6 +1,7 @@
 package com.food_delivery_system.payment_service.service.implementation;
 
 import com.food_delivery_system.http.payment.CreatePaymentRequest;
+import com.food_delivery_system.http.payment.PaymentMethod;
 import com.food_delivery_system.http.payment.PaymentStatus;
 import com.food_delivery_system.payment_service.entity.payment.PaymentEntity;
 import com.food_delivery_system.payment_service.repository.PaymentJpaRepository;
@@ -8,6 +9,7 @@ import com.food_delivery_system.payment_service.service.PaymentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -23,7 +25,14 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    @Transactional
     public PaymentEntity createPayment(CreatePaymentRequest request) {
+
+        Optional<PaymentEntity> foundPayment = paymentJpaRepository.findByOrderId(request.orderId());
+        if (foundPayment.isPresent()) {
+            log.info("Payment already exists for orderId={}", request.orderId());
+            return foundPayment.get();
+        }
 
         PaymentEntity newPayment = PaymentEntity.builder()
                 .orderId(request.orderId())
@@ -32,11 +41,8 @@ public class PaymentServiceImpl implements PaymentService {
                 .paymentMethod(request.paymentMethod())
                 .build();
 
-        Optional<PaymentEntity> foundPayment = paymentJpaRepository.findByOrderId(request.orderId());
-        if (foundPayment.isPresent()) {
-            log.info("Payment already exists for orderId={}", request.orderId());
-            return foundPayment.get();
-        }
+        PaymentStatus paymentStatus = request.paymentMethod().equals(PaymentMethod.QR) ? PaymentStatus.PAYMENT_FAILED : PaymentStatus.PAYMENT_SUCCEEDED;
+        newPayment.setPaymentStatus(paymentStatus);
 
         PaymentEntity savedPayment = paymentJpaRepository.save(newPayment);
         log.info("New payment has been created with id: {}", savedPayment.getId());

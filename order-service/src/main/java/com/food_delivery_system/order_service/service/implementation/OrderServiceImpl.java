@@ -2,9 +2,13 @@ package com.food_delivery_system.order_service.service.implementation;
 
 import com.food_delivery_system.http.order.CreateOrderRequest;
 import com.food_delivery_system.http.order.OrderStatus;
+import com.food_delivery_system.http.payment.CreatePaymentRequest;
+import com.food_delivery_system.http.payment.CreatePaymentResponse;
+import com.food_delivery_system.http.payment.PaymentStatus;
+import com.food_delivery_system.order_service.dto.OrderPaymentRequest;
 import com.food_delivery_system.order_service.entity.order.OrderEntity;
 import com.food_delivery_system.order_service.entity.order_item.OrderItemEntity;
-import com.food_delivery_system.order_service.repository.OrderItemJpaRepository;
+import com.food_delivery_system.order_service.external.PaymentHttpClient;
 import com.food_delivery_system.order_service.repository.OrderJpaRepository;
 import com.food_delivery_system.order_service.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
@@ -22,15 +26,14 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class OrderServiceImpl implements OrderService {
-    private final OrderItemJpaRepository orderItemJpaRepository;
 
     private final OrderJpaRepository orderJpaRepository;
+    private final PaymentHttpClient paymentHttpClient;
 
     @Autowired
-    public OrderServiceImpl(OrderJpaRepository orderJpaRepository,
-                            OrderItemJpaRepository orderItemJpaRepository) {
+    public OrderServiceImpl(OrderJpaRepository orderJpaRepository, PaymentHttpClient paymentHttpClient) {
         this.orderJpaRepository = orderJpaRepository;
-        this.orderItemJpaRepository = orderItemJpaRepository;
+        this.paymentHttpClient = paymentHttpClient;
     }
 
     @Override
@@ -84,5 +87,23 @@ public class OrderServiceImpl implements OrderService {
         }
 
         orderEntity.setTotalAmount(totalPrice);
+    }
+
+    @Override
+    @Transactional
+    public OrderEntity processPayment(Long orderId, OrderPaymentRequest request) {
+        log.info("Paying order with id={}, request={}", orderId, request);
+
+        OrderEntity theOrder = getOrderOrThrow(orderId);
+        if (!theOrder.getOrderStatus().equals(OrderStatus.PENDING_PAYMENT)) {
+            throw new RuntimeException("Order must be in status PENDING_PAYMENT");
+        }
+
+        CreatePaymentResponse paymentResponse = paymentHttpClient.createPayment(new CreatePaymentRequest(orderId, request.paymentMethod(), theOrder.getTotalAmount()));
+        OrderStatus orderStatus = paymentResponse.paymentStatus().equals(PaymentStatus.PAYMENT_SUCCEEDED) ? OrderStatus.PAID : OrderStatus.PAYMENT_FAILED;
+        log.info("Payment for orderId {} has been proceeded with status {}", orderId, orderStatus);
+
+        theOrder.setOrderStatus(orderStatus);
+        return orderJpaRepository.save(theOrder);
     }
 }
