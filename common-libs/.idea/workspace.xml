@@ -6,7 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="d2f9ec57-7b2b-4ee8-8c0a-2655b018f70f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../payment-service/src/main/java/com/food_delivery_system/payment_service/dto/CreatePaymentRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../payment-service/src/main/java/com/food_delivery_system/payment_service/dto/CreatePaymentResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../payment-service/src/main/java/com/food_delivery_system/payment_service/entity/payment/PaymentMethod.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../payment-service/src/main/java/com/food_delivery_system/payment_service/entity/payment/PaymentStatus.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,17 +27,17 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "master",
-    "kotlin-language-version-configured": "true",
-    "onboarding.tips.debug.path": "/Users/ivanbohachuk/practiceSpring/food-delivery-system/common-libs/src/main/java/com/food-delivery-system/Main.java"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;/Users/ivanbohachuk/practiceSpring/food-delivery-system/common-libs/src/main/java/com/food-delivery-system/Main.java&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>

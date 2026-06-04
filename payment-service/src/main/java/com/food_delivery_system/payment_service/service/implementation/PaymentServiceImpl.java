@@ -1,8 +1,8 @@
 package com.food_delivery_system.payment_service.service.implementation;
 
-import com.food_delivery_system.payment_service.dto.CreatePaymentRequest;
+import com.food_delivery_system.http.payment.CreatePaymentRequest;
+import com.food_delivery_system.http.payment.PaymentStatus;
 import com.food_delivery_system.payment_service.entity.payment.PaymentEntity;
-import com.food_delivery_system.payment_service.entity.payment.PaymentStatus;
 import com.food_delivery_system.payment_service.repository.PaymentJpaRepository;
 import com.food_delivery_system.payment_service.service.PaymentService;
 import lombok.extern.slf4j.Slf4j;

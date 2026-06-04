@@ -1,4 +1,4 @@
-package com.food_delivery_system.payment_service.entity.payment;
+package com.food_delivery_system.http.payment;
 
 public enum PaymentStatus {
     PAYMENT_CREATED,

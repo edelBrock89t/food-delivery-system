@@ -1,7 +1,7 @@
 package com.food_delivery_system.payment_service.controller;
 
-import com.food_delivery_system.payment_service.dto.CreatePaymentRequest;
-import com.food_delivery_system.payment_service.dto.CreatePaymentResponse;
+import com.food_delivery_system.http.payment.CreatePaymentRequest;
+import com.food_delivery_system.http.payment.CreatePaymentResponse;
 import com.food_delivery_system.payment_service.entity.payment.PaymentEntity;
 import com.food_delivery_system.payment_service.service.PaymentService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,12 +28,12 @@ public class PaymentController {
         log.info("Received request: paymentRequest={}", request);
 
         PaymentEntity savedPayment = paymentService.createPayment(request);
-        return CreatePaymentResponse.builder()
-                .paymentId(savedPayment.getId())
-                .paymentStatus(savedPayment.getPaymentStatus())
-                .orderId(savedPayment.getOrderId())
-                .paymentMethod(savedPayment.getPaymentMethod())
-                .amount(savedPayment.getAmount())
-                .build();
+        return new CreatePaymentResponse(
+                savedPayment.getId(),
+                savedPayment.getPaymentStatus(),
+                savedPayment.getOrderId(),
+                savedPayment.getPaymentMethod(),
+                savedPayment.getAmount()
+        );
     }
 }

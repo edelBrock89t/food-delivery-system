@@ -1,5 +1,7 @@
 package com.food_delivery_system.payment_service.entity.payment;
 
+import com.food_delivery_system.http.payment.PaymentMethod;
+import com.food_delivery_system.http.payment.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -1,6 +1,4 @@
-package com.food_delivery_system.payment_service.dto;
-
-import com.food_delivery_system.payment_service.entity.payment.PaymentMethod;
+package com.food_delivery_system.http.payment;
 
 import java.math.BigDecimal;
 
