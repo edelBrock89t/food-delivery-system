@@ -1,4 +1,4 @@
-package com.food_delivery_system.order_service.entity.order;
+package com.food_delivery_system.http.order;
 
 public enum OrderStatus {
 

@@ -1,6 +1,6 @@
 package com.food_delivery_system.order_service.converter;
 
-import com.food_delivery_system.order_service.dto.OrderDTO;
+import com.food_delivery_system.http.order.OrderDTO;
 import com.food_delivery_system.order_service.entity.order.OrderEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
@@ -20,15 +20,15 @@ public class OrderDTOConverter implements Converter<OrderEntity, OrderDTO> {
 
     @Override
     public OrderDTO convert(OrderEntity source) {
-        return OrderDTO.builder()
-                .id(source.getId())
-                .customerId(source.getCustomerId())
-                .address(source.getAddress())
-                .totalAmount(source.getTotalAmount())
-                .courierName(source.getCourierName())
-                .etaMinutes(source.getEtaMinutes())
-                .orderStatus(source.getOrderStatus())
-                .orderItemEntities(source.getOrderItemEntities().stream().map(orderItemDTOConverter::convert).collect(Collectors.toSet()))
-                .build();
+        return new OrderDTO(
+                source.getId(),
+                source.getCustomerId(),
+                source.getAddress(),
+                source.getTotalAmount(),
+                source.getCourierName(),
+                source.getEtaMinutes(),
+                source.getOrderStatus(),
+                source.getOrderItemEntities().stream().map(orderItemDTOConverter::convert).collect(Collectors.toSet())
+        );
     }
 }

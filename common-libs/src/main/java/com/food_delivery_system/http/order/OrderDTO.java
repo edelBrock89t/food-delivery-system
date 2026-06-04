@@ -1,12 +1,8 @@
-package com.food_delivery_system.order_service.dto;
-
-import com.food_delivery_system.order_service.entity.order.OrderStatus;
-import lombok.Builder;
+package com.food_delivery_system.http.order;
 
 import java.math.BigDecimal;
 import java.util.Set;
 
-@Builder
 public record OrderDTO(
         Long id,
         Long customerId,

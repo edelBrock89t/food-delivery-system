@@ -1,8 +1,8 @@
 package com.food_delivery_system.order_service.controller;
 
+import com.food_delivery_system.http.order.CreateOrderRequest;
+import com.food_delivery_system.http.order.OrderDTO;
 import com.food_delivery_system.order_service.converter.OrderDTOConverter;
-import com.food_delivery_system.order_service.dto.CreateOrderRequest;
-import com.food_delivery_system.order_service.dto.OrderDTO;
 import com.food_delivery_system.order_service.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

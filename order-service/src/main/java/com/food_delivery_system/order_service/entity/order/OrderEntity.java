@@ -1,6 +1,7 @@
 package com.food_delivery_system.order_service.entity.order;
 
 
+import com.food_delivery_system.http.order.OrderStatus;
 import com.food_delivery_system.order_service.entity.order_item.OrderItemEntity;
 import jakarta.persistence.*;
 import lombok.*;

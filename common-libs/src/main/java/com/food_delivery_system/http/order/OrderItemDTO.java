@@ -1,10 +1,7 @@
-package com.food_delivery_system.order_service.dto;
-
-import lombok.Builder;
+package com.food_delivery_system.http.order;
 
 import java.math.BigDecimal;
 
-@Builder
 public record OrderItemDTO(
         Long id,
         Long itemId,

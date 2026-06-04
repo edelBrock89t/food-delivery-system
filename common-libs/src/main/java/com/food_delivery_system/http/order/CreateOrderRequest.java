@@ -1,4 +1,4 @@
-package com.food_delivery_system.order_service.dto;
+package com.food_delivery_system.http.order;
 
 import java.util.Set;
 

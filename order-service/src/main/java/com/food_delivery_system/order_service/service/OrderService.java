@@ -1,6 +1,6 @@
 package com.food_delivery_system.order_service.service;
 
-import com.food_delivery_system.order_service.dto.CreateOrderRequest;
+import com.food_delivery_system.http.order.CreateOrderRequest;
 import com.food_delivery_system.order_service.entity.order.OrderEntity;
 
 public interface OrderService {

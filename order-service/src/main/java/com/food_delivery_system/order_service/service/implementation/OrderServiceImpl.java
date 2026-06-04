@@ -1,8 +1,8 @@
 package com.food_delivery_system.order_service.service.implementation;
 
-import com.food_delivery_system.order_service.dto.CreateOrderRequest;
+import com.food_delivery_system.http.order.CreateOrderRequest;
+import com.food_delivery_system.http.order.OrderStatus;
 import com.food_delivery_system.order_service.entity.order.OrderEntity;
-import com.food_delivery_system.order_service.entity.order.OrderStatus;
 import com.food_delivery_system.order_service.entity.order_item.OrderItemEntity;
 import com.food_delivery_system.order_service.repository.OrderItemJpaRepository;
 import com.food_delivery_system.order_service.repository.OrderJpaRepository;
