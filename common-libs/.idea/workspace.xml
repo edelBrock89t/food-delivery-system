@@ -5,17 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2f9ec57-7b2b-4ee8-8c0a-2655b018f70f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/food_delivery_system/kafka/DeliveryAssignedEvent.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/food_delivery_system/kafka/OrderPaidEvent.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../order-service/docker-compose.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../order-service/src/main/java/com/food_delivery_system/order_service/config/KafkaProducerConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../order-service/src/main/java/com/food_delivery_system/order_service/kafka/producer/OrderKafkaProducer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../delivery-service/src/main/java/com/food_delivery_service/delivery_service/config/ConsumerKafkaConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../order-service/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../order-service/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../order-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../order-service/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../order-service/src/main/java/com/food_delivery_system/order_service/service/implementation/OrderServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/../order-service/src/main/java/com/food_delivery_system/order_service/service/implementation/OrderServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../order-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../order-service/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../delivery-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../delivery-service/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
