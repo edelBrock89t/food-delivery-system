@@ -19,7 +19,7 @@ public class OrderPaidKafkaConsumer {
         this.deliveryService = deliveryService;
     }
 
-    @KafkaListener(topics = "orders.events", groupId = "order-service-group", containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = "${order.kafka.topic.order-paid}", groupId = "order-service-group", containerFactory = "kafkaListenerContainerFactory")
     public void orderPaidEventConsumerListener(ConsumerRecord<String, OrderPaidEvent> consumerRecord) {
         log.info("Received OrderPaidEvent from Kafka topic: {}", consumerRecord.topic());
         log.info("Received OrderPaidEvent from Kafka topic: {}", consumerRecord.value());
