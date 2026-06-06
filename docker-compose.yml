@@ -4,7 +4,8 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - postgres_data:/var/lib/postgres/data
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       - POSTGRES_URL=${POSTGRES_URL}
       - POSTGRES_USERNAME=${POSTGRES_USERNAME}
