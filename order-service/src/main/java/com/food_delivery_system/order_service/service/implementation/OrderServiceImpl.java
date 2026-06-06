@@ -5,24 +5,22 @@ import com.food_delivery_system.http.order.OrderStatus;
 import com.food_delivery_system.http.payment.CreatePaymentRequest;
 import com.food_delivery_system.http.payment.CreatePaymentResponse;
 import com.food_delivery_system.http.payment.PaymentStatus;
-import com.food_delivery_system.kafka.OrderPaidEvent;
+import com.food_delivery_system.kafka.DeliveryAssignedEvent;
 import com.food_delivery_system.order_service.dto.OrderPaymentRequest;
 import com.food_delivery_system.order_service.entity.order.OrderEntity;
 import com.food_delivery_system.order_service.entity.order_item.OrderItemEntity;
 import com.food_delivery_system.order_service.external.PaymentHttpClient;
+import com.food_delivery_system.order_service.kafka.producer.OrderKafkaProducer;
 import com.food_delivery_system.order_service.repository.OrderJpaRepository;
 import com.food_delivery_system.order_service.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -31,17 +29,15 @@ import java.util.stream.Collectors;
 @Service
 public class OrderServiceImpl implements OrderService {
 
-    @Value("${order.kafka.topics}")
-    private String ordersTopic;
     private final OrderJpaRepository orderJpaRepository;
     private final PaymentHttpClient paymentHttpClient;
-    private final KafkaTemplate<String, OrderPaidEvent> kafkaTemplate;
+    private final OrderKafkaProducer orderKafkaProducer;
 
     @Autowired
-    public OrderServiceImpl(OrderJpaRepository orderJpaRepository, PaymentHttpClient paymentHttpClient, KafkaTemplate<String, OrderPaidEvent> kafkaTemplate) {
+    public OrderServiceImpl(OrderJpaRepository orderJpaRepository, PaymentHttpClient paymentHttpClient, OrderKafkaProducer orderKafkaProducer) {
         this.orderJpaRepository = orderJpaRepository;
         this.paymentHttpClient = paymentHttpClient;
-        this.kafkaTemplate = kafkaTemplate;
+        this.orderKafkaProducer = orderKafkaProducer;
     }
 
     @Override
@@ -113,21 +109,22 @@ public class OrderServiceImpl implements OrderService {
         theOrder.setOrderStatus(orderStatus);
         OrderEntity saved = orderJpaRepository.save(theOrder);
 
-        sendOrderPaidEventToKafka(saved, paymentResponse);
+        orderKafkaProducer.sendOrderPaidEvent(saved, paymentResponse);
         return saved;
     }
 
-    private void sendOrderPaidEventToKafka(OrderEntity orderEntity, CreatePaymentResponse paymentResponse) {
-        OrderPaidEvent orderPaidEvent = new OrderPaidEvent(
-                orderEntity.getId(),
-                paymentResponse.paymentId(),
-                orderEntity.getTotalAmount(),
-                paymentResponse.paymentMethod(),
-                LocalDateTime.now()
-        );
-        kafkaTemplate.send(ordersTopic, orderEntity.getId().toString(), orderPaidEvent)
-                .thenAccept(result -> {
-                    log.info("Payment for orderId id={} has been proceeded with status orderStatus={}", orderEntity.getId(), orderEntity.getOrderStatus());
-                });
+    @Override
+    @Transactional
+    public void assignDeliveryToOrder(Long orderId, DeliveryAssignedEvent event) {
+        OrderEntity theOrder = orderJpaRepository.findById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Something went wrong. Order with orderId={" + orderId + "} not found"));
+        if (theOrder.getOrderStatus().equals(OrderStatus.PENDING_DELIVERY)) {
+            log.info("The Order with orderId={} already has assigned delivery", orderId);
+            return;
+        }
+        theOrder.setOrderStatus(OrderStatus.PENDING_DELIVERY);
+        theOrder.setCourierName(event.courierName());
+        theOrder.setEtaMinutes(event.etaMinutes());
+
+        orderJpaRepository.save(theOrder);
     }
 }
