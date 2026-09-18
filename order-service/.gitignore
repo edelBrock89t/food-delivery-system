@@ -5,6 +5,7 @@ target/
 !**/src/test/**/target/
 .DS_Store
 .env
+./src/main/resources/certificates/
 
 ### STS ###
 .apt_generated

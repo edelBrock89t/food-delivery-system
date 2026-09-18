@@ -1,18 +1,21 @@
 package com.food_delivery_system.order_service.service.implementation;
 
-import com.food_delivery_system.http.order.CreateOrderRequest;
+import com.food_delivery_system.grpc.order_payment.CreatePaymentRequest;
+import com.food_delivery_system.grpc.order_payment.CreatePaymentResponse;
+import com.food_delivery_system.grpc.order_payment.PaymentMethod;
+import com.food_delivery_system.grpc.order_payment.PaymentStatus;
+import com.food_delivery_system.http.order.CreateOrderRequestDTO;
 import com.food_delivery_system.http.order.OrderStatus;
-import com.food_delivery_system.http.payment.CreatePaymentRequest;
-import com.food_delivery_system.http.payment.CreatePaymentResponse;
-import com.food_delivery_system.http.payment.PaymentStatus;
 import com.food_delivery_system.kafka.DeliveryAssignedEvent;
+import com.food_delivery_system.order_service.converter.PaymentMapper;
 import com.food_delivery_system.order_service.dto.OrderPaymentRequest;
 import com.food_delivery_system.order_service.entity.order.OrderEntity;
 import com.food_delivery_system.order_service.entity.order_item.OrderItemEntity;
-import com.food_delivery_system.order_service.external.PaymentHttpClient;
+import com.food_delivery_system.order_service.gRPC.client.PaymentServiceClient;
 import com.food_delivery_system.order_service.kafka.producer.OrderKafkaProducer;
 import com.food_delivery_system.order_service.repository.OrderJpaRepository;
 import com.food_delivery_system.order_service.service.OrderService;
+import com.food_delivery_system.order_service.utils.PriceCalculatorUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,7 +25,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -30,19 +32,21 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderJpaRepository orderJpaRepository;
-    private final PaymentHttpClient paymentHttpClient;
     private final OrderKafkaProducer orderKafkaProducer;
+    private final PaymentServiceClient paymentServiceClient;
+    private final PaymentMapper paymentMapper;
 
     @Autowired
-    public OrderServiceImpl(OrderJpaRepository orderJpaRepository, PaymentHttpClient paymentHttpClient, OrderKafkaProducer orderKafkaProducer) {
+    public OrderServiceImpl(OrderJpaRepository orderJpaRepository, OrderKafkaProducer orderKafkaProducer, PaymentServiceClient paymentServiceClient, PaymentMapper paymentMapper) {
         this.orderJpaRepository = orderJpaRepository;
-        this.paymentHttpClient = paymentHttpClient;
         this.orderKafkaProducer = orderKafkaProducer;
+        this.paymentServiceClient = paymentServiceClient;
+        this.paymentMapper = paymentMapper;
     }
 
     @Override
     @Transactional
-    public OrderEntity createOrder(CreateOrderRequest request) {
+    public OrderEntity createOrder(CreateOrderRequestDTO request) {
         log.info("Creating order: request={}", request);
 
         OrderEntity newOrder = OrderEntity.builder()
@@ -65,7 +69,7 @@ public class OrderServiceImpl implements OrderService {
                         .build()).collect(Collectors.toSet());
         newOrder.setOrderItemEntities(orderItems);
 
-        calculatePricingForOrder(newOrder);
+        PriceCalculatorUtils.calculatePricingForOrder(newOrder);
 
         return orderJpaRepository.save(newOrder);
     }
@@ -75,22 +79,6 @@ public class OrderServiceImpl implements OrderService {
         log.info("Retrieving order with id: {}", id);
 
         return orderJpaRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order with id {" + id + "} was not found"));
-    }
-
-    private void calculatePricingForOrder(OrderEntity orderEntity) {
-
-        BigDecimal totalPrice = BigDecimal.ZERO;
-
-        for(OrderItemEntity item : orderEntity.getOrderItemEntities()) {
-            double randomPrice = ThreadLocalRandom.current().nextDouble(100, 5000);
-            item.setPriceAtPurchase(BigDecimal.valueOf(randomPrice));
-
-            totalPrice = item.getPriceAtPurchase()
-                    .multiply(BigDecimal.valueOf(item.getQuantity()))
-                    .add(totalPrice);
-        }
-
-        orderEntity.setTotalAmount(totalPrice);
     }
 
     @Override
@@ -103,13 +91,19 @@ public class OrderServiceImpl implements OrderService {
             throw new RuntimeException("Order must be in status PENDING_PAYMENT");
         }
 
-        CreatePaymentResponse paymentResponse = paymentHttpClient.createPayment(new CreatePaymentRequest(orderId, request.paymentMethod(), theOrder.getTotalAmount()));
-        OrderStatus orderStatus = paymentResponse.paymentStatus().equals(PaymentStatus.PAYMENT_SUCCEEDED) ? OrderStatus.PAID : OrderStatus.PAYMENT_FAILED;
+        CreatePaymentResponse paymentResponse = paymentServiceClient.createPayment(
+                CreatePaymentRequest.newBuilder()
+                        .setOrderId(orderId)
+                        .setPaymentMethod(PaymentMethod.valueOf(request.paymentMethod().name()))
+                        .setAmount(theOrder.getTotalAmount().longValue())
+                        .build()
+        );
+        OrderStatus orderStatus = paymentResponse.getPaymentStatus().equals(PaymentStatus.PAYMENT_SUCCEEDED) ? OrderStatus.PAID : OrderStatus.PAYMENT_FAILED;
 
         theOrder.setOrderStatus(orderStatus);
         OrderEntity saved = orderJpaRepository.save(theOrder);
 
-        orderKafkaProducer.sendOrderPaidEvent(saved, paymentResponse);
+        orderKafkaProducer.sendOrderPaidEvent(saved, paymentMapper.toDomain(paymentResponse));
         return saved;
     }
 

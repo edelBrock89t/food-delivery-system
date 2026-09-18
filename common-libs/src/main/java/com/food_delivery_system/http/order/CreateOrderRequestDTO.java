@@ -2,9 +2,9 @@ package com.food_delivery_system.http.order;
 
 import java.util.Set;
 
-public record CreateOrderRequest(
+public record CreateOrderRequestDTO (
         Long customerId,
         String address,
-        Set<CreateOrderItemRequest> items
+        Set<CreateOrderItemRequestDTO> items
 ) {
 }

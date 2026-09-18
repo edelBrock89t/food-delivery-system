@@ -1,6 +1,6 @@
 package com.food_delivery_system.order_service.controller;
 
-import com.food_delivery_system.http.order.CreateOrderRequest;
+import com.food_delivery_system.http.order.CreateOrderRequestDTO;
 import com.food_delivery_system.http.order.OrderDTO;
 import com.food_delivery_system.order_service.converter.OrderEntityMapper;
 import com.food_delivery_system.order_service.dto.OrderPaymentRequest;
@@ -22,7 +22,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public OrderDTO createOrder(@RequestBody CreateOrderRequest createOrderRequest) {
+    public OrderDTO createOrder(@RequestBody CreateOrderRequestDTO createOrderRequest) {
         return orderEntityMapper.toOrderDTO(orderService.createOrder(createOrderRequest));
     }
 

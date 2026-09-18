@@ -1,7 +1,7 @@
 package com.food_delivery_system.order_service.kafka.producer;
 
 import com.food_delivery_system.http.order.OrderStatus;
-import com.food_delivery_system.http.payment.CreatePaymentResponse;
+import com.food_delivery_system.http.payment.CreatePaymentResponseDTO;
 import com.food_delivery_system.kafka.OrderPaidEvent;
 import com.food_delivery_system.order_service.entity.order.OrderEntity;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ public class OrderKafkaProducer {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendOrderPaidEvent(OrderEntity orderEntity, CreatePaymentResponse paymentResponse) {
+    public void sendOrderPaidEvent(OrderEntity orderEntity, CreatePaymentResponseDTO paymentResponse) {
         if(orderEntity.getOrderStatus().equals(OrderStatus.PAYMENT_FAILED)) {
             log.error("Cannot assign delivery for order with orderId={}, because it's not paid", orderEntity.getId());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot assign delivery for order with orderId={" + orderEntity.getId() + "}, because it's not paid");

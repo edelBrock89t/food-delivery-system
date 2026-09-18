@@ -1,7 +1,7 @@
 package com.food_delivery_system.payment_service.controller;
 
-import com.food_delivery_system.http.payment.CreatePaymentRequest;
-import com.food_delivery_system.http.payment.CreatePaymentResponse;
+import com.food_delivery_system.http.payment.CreatePaymentRequestDTO;
+import com.food_delivery_system.http.payment.CreatePaymentResponseDTO;
 import com.food_delivery_system.payment_service.entity.payment.PaymentEntity;
 import com.food_delivery_system.payment_service.mapper.PaymentEntityMapper;
 import com.food_delivery_system.payment_service.service.PaymentService;
@@ -27,7 +27,7 @@ public class PaymentController {
     }
 
     @PostMapping
-    public CreatePaymentResponse createPayment(@RequestBody CreatePaymentRequest request) {
+    public CreatePaymentResponseDTO createPayment(@RequestBody CreatePaymentRequestDTO request) {
         log.info("Received request: paymentRequest={}", request);
 
         PaymentEntity savedPayment = paymentService.createPayment(request);

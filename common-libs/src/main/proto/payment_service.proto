@@ -1,0 +1,37 @@
+
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.food_delivery_system.grpc.order_payment";
+option java_outer_classname = "PaymentServiceProto";
+
+service PaymentService {
+  rpc ProcessPayment(CreatePaymentRequest) returns (CreatePaymentResponse);
+}
+
+message CreatePaymentRequest {
+  int64 order_id = 1;
+  PaymentMethod paymentMethod = 2;
+  int64 amount = 3;
+}
+
+message CreatePaymentResponse {
+  int64 payment_id = 1;
+  PaymentStatus paymentStatus = 2;
+  int64 orderId = 3;
+  PaymentMethod paymentMethod = 4;
+  int64 amount = 5;
+}
+
+enum PaymentMethod {
+  PAYMENT_METHOD_UNSPECIFIED = 0;
+  CARD = 1;
+  QR = 2;
+}
+
+enum PaymentStatus {
+    PAYMENT_CREATED = 0;
+    PAYMENT_SUCCEEDED = 1;
+    PAYMENT_FAILED = 2;
+    REFUNDED = 3;
+}

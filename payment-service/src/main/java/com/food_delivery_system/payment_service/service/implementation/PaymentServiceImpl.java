@@ -1,6 +1,6 @@
 package com.food_delivery_system.payment_service.service.implementation;
 
-import com.food_delivery_system.http.payment.CreatePaymentRequest;
+import com.food_delivery_system.http.payment.CreatePaymentRequestDTO;
 import com.food_delivery_system.http.payment.PaymentMethod;
 import com.food_delivery_system.http.payment.PaymentStatus;
 import com.food_delivery_system.payment_service.entity.payment.PaymentEntity;
@@ -26,7 +26,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public PaymentEntity createPayment(CreatePaymentRequest request) {
+    public PaymentEntity createPayment(CreatePaymentRequestDTO request) {
 
         Optional<PaymentEntity> foundPayment = paymentJpaRepository.findByOrderId(request.orderId());
         if (foundPayment.isPresent()) {
