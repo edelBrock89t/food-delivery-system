@@ -11,6 +11,10 @@ import com.food_delivery_system.order_service.converter.PaymentMapper;
 import com.food_delivery_system.order_service.dto.OrderPaymentRequest;
 import com.food_delivery_system.order_service.entity.order.OrderEntity;
 import com.food_delivery_system.order_service.entity.order_item.OrderItemEntity;
+import com.food_delivery_system.order_service.errors.OrderIsNotInPendingPaymentStatusException;
+import com.food_delivery_system.order_service.errors.OrderNotFoundException;
+import com.food_delivery_system.order_service.errors.PaymentFailedException;
+import com.food_delivery_system.order_service.errors.PaymentServiceUnavailableException;
 import com.food_delivery_system.order_service.gRPC.client.PaymentServiceClient;
 import com.food_delivery_system.order_service.kafka.producer.OrderKafkaProducer;
 import com.food_delivery_system.order_service.repository.OrderJpaRepository;
@@ -83,12 +87,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public OrderEntity processPayment(Long orderId, OrderPaymentRequest request) {
+    public OrderEntity processPayment(Long orderId, OrderPaymentRequest request) throws OrderNotFoundException, PaymentServiceUnavailableException, PaymentFailedException, OrderIsNotInPendingPaymentStatusException {
         log.info("Paying order with id={}, request={}", orderId, request);
 
         OrderEntity theOrder = getOrderOrThrow(orderId);
         if (!theOrder.getOrderStatus().equals(OrderStatus.PENDING_PAYMENT)) {
-            throw new RuntimeException("Order must be in status PENDING_PAYMENT");
+            throw new OrderIsNotInPendingPaymentStatusException("Order must be in status PENDING_PAYMENT");
         }
 
         CreatePaymentResponse paymentResponse = paymentServiceClient.createPayment(

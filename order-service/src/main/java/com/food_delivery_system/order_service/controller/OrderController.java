@@ -4,6 +4,10 @@ import com.food_delivery_system.http.order.CreateOrderRequestDTO;
 import com.food_delivery_system.http.order.OrderDTO;
 import com.food_delivery_system.order_service.converter.OrderEntityMapper;
 import com.food_delivery_system.order_service.dto.OrderPaymentRequest;
+import com.food_delivery_system.order_service.errors.OrderIsNotInPendingPaymentStatusException;
+import com.food_delivery_system.order_service.errors.OrderNotFoundException;
+import com.food_delivery_system.order_service.errors.PaymentFailedException;
+import com.food_delivery_system.order_service.errors.PaymentServiceUnavailableException;
 import com.food_delivery_system.order_service.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +36,7 @@ public class OrderController {
     }
 
     @PostMapping("/{id}/pay")
-    public OrderDTO processPayment(@PathVariable("id") Long orderId, @RequestBody OrderPaymentRequest request) {
+    public OrderDTO processPayment(@PathVariable("id") Long orderId, @RequestBody OrderPaymentRequest request) throws OrderNotFoundException, PaymentServiceUnavailableException, PaymentFailedException, OrderIsNotInPendingPaymentStatusException {
         return orderEntityMapper.toOrderDTO(orderService.processPayment(orderId, request));
     }
 }
