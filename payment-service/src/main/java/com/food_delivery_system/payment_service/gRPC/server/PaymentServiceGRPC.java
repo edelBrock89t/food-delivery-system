@@ -9,6 +9,7 @@ import com.food_delivery_system.payment_service.converter.CreatePaymentRequesDTO
 import com.food_delivery_system.payment_service.entity.payment.PaymentEntity;
 import com.food_delivery_system.payment_service.gRPC.errors.PaymentFailedException;
 import com.food_delivery_system.payment_service.service.PaymentService;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.grpc.server.service.GrpcService;
@@ -42,7 +43,11 @@ public class PaymentServiceGRPC extends PaymentServiceGrpc.PaymentServiceImplBas
             responseObserver.onNext(paymentResponse);
             responseObserver.onCompleted();
         } else {
-            responseObserver.onError(new PaymentFailedException("Payment for orderId={" + paymentEntity.getId() + "} failed"));
+            responseObserver.onError(
+                    Status.FAILED_PRECONDITION
+                            .withDescription("Payment for orderId=" + paymentEntity.getOrderId() + " failed")
+                            .asRuntimeException()
+            );
         }
     }
 }
